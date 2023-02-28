@@ -4,8 +4,7 @@ import minetweaker.item.IItemStack;
 import minetweaker.item.IIngredient;
 /***************************************************************************************************/
 /* Bio Shared Library, put it on top of every script make the script independent, use the v.x to track progress
-v.1
-*/
+v.2-stack-normalization*/
 val Screwdriver = <ore:craftingToolScrewdriver>;
 val HHammer = <ore:craftingToolHardHammer>;
 val SHammer = <ore:craftingToolSoftHammer>;
@@ -30,12 +29,12 @@ function remover(item as minetweaker.item.IItemStack) {
 }
 
 function addShapedr(output as minetweaker.item.IItemStack,recipe as minetweaker.item.IIngredient[][]){
-  recipes.remove(output);
+  recipes.remove(output.definition.makeStack(1));
   recipes.addShaped(output,recipe);
 }
 
 function addShapelessr(output as minetweaker.item.IItemStack,recipe as minetweaker.item.IIngredient[]){
-  recipes.remove(output);
+  recipes.remove(output.definition.makeStack(1));
   recipes.addShapeless(output,recipe);
 }
 
@@ -93,7 +92,7 @@ mods.campfirebackport.addCampfireRecipe("regular", [basin], <gregtech:gt.multiti
 val scp=<ore:scrapGtAnyStone>;
 val brk=<minecraft:brick>;
 val stn=<ore:cobblestone>;
-addShapeless(<ore:scrapGtStone>.firstItem,scp);<ore:scrapGtStone>.firstItem.addTooltip(format.green("Comes from breaking Tools and Anvils"));
+addShapeless(<ore:scrapGtStone>.firstItem,[scp]);<ore:scrapGtStone>.firstItem.addTooltip(format.green("Comes from breaking Tools and Anvils"));
 //addShapeless(<ore:scrapGtStone>.firstItem*2,[HHammer,<ore:dirt>]);
 //addShapeless(<ore:scrapGtStone>.firstItem*4,[HHammer,stn]);
 // for item in <ore:dustAnyStone>.items // Scrap factory
@@ -120,7 +119,29 @@ remove(<minecraft:ender_chest>);
 
 //Bed
 <minecraft:bed>.addTooltip(format.green("Goodbuy Dark ages, and Hello Darker Ages!!"));
-<ore:pillow>.add(<minecraft:feather>);
+//<ore:pillow>.add(<minecraft:feather>);
+<ore:pillow>.add(<minecraft:wool:0>);
 <ore:sheets>.add(<OpenBlocks:sleepingBag>);
-addShapedr(<minecraft:bed>,[[SHammer,Saw,<ore:pillow>],[<ore:sheets>,<ore:beamWood>,<ore:screwBronze>],[<ore:stickLongBronze>,<ore:stickLongBronze>,Screwdriver]]);
-addShapedr(<minecraft:bed>,[[SHammer,Saw,<ore:pillow>],[<ore:sheets>,<ore:beamWood>,<ore:screwAnyIronSteel>],[<ore:stickLongAnyIronSteel>,<ore:stickLongAnyIronSteel>,Screwdriver]]);
+<ore:bedframe>.add(<IC2:blockScaffold>);
+addShapedr(<minecraft:bed>,[[<ore:sheets>,<ore:sheets>,<ore:pillow>],[<ore:screwBronze>,<ore:plateBronze>,<ore:screwBronze>],[<ore:bedframe>,Screwdriver,<ore:bedframe>]]);
+remove(<harvestthenether:netherbedItem>);
+addShapedr(<CarpentersBlocks:itemCarpentersBed>,[[<ore:sheets>,<ore:sheets>,<ore:pillow>],[<ore:screwBronze>,<ore:plateBronze>,<ore:screwBronze>],[<CarpentersBlocks:blockCarpentersBlock>,Screwdriver,<CarpentersBlocks:blockCarpentersBlock>]]);
+
+val screwMetals = [<ore:screwBronze>,<ore:screwAnyIron>,<ore:screwLead>] as minetweaker.item.IIngredient[];
+//IC2 scaffs
+remover(<IC2:blockScaffold>);
+for scw in screwMetals {
+addShaped(<IC2:blockScaffold>*5,[[<ore:plateAnyNormalWood>,Screwdriver,<ore:plateAnyNormalWood>],[<ore:stickAnyNormalWood>,scw,<ore:stickAnyNormalWood>],[<ore:plateAnyNormalWood>,<ore:plateAnyNormalWood>,<ore:plateAnyNormalWood>]]);}
+
+//IE scaff tWood
+remover(<ImmersiveEngineering:woodenDecoration:5>);
+for scw in screwMetals {
+addShaped(<ImmersiveEngineering:woodenDecoration:5>*5,[[<ore:plateAnyTreatedWood>,Screwdriver,<ore:plateAnyTreatedWood>],[<ore:stickAnyTreatedWood>,scw,<ore:stickAnyTreatedWood>],[<ore:plateAnyTreatedWood>,<ore:plateAnyTreatedWood>,<ore:plateAnyTreatedWood>]]);}
+
+//Carpenters Block
+remover(<CarpentersBlocks:blockCarpentersBlock>);
+for scw in screwMetals {
+addShaped(<CarpentersBlocks:blockCarpentersBlock>*10,[[<ore:stickAnyTreatedWood>,Screwdriver,<ore:stickAnyTreatedWood>],[<ore:plateAnyTreatedWood>,scw,<ore:plateAnyTreatedWood>],[<ore:stickAnyTreatedWood>,<ore:stickAnyTreatedWood>,<ore:stickAnyTreatedWood>]]);}
+
+//Ladders
+
