@@ -48,6 +48,9 @@ function addShapeless(output as minetweaker.item.IItemStack,recipe as minetweake
 /***************************************************************************************************/
 
 val bar=<gregtech:gt.block.bars.wood>;
+val stickWood=<ore:stickAnyNormalWood>;
+val stickLongWood=<ore:stickLongAnyNormalWood>;
+val plateWood=<ore:plateAnyNormalWood>;
 
 // Gregify crafting table
 val ptable = <ProjRed|Expansion:projectred.expansion.machine2:10>;
@@ -84,11 +87,21 @@ val basin=<gregtech:gt.multiitem.randomtools:990>;
 //addShaped(sbplate*2,[[splate,HHammer],[<ore:craftingToolSawAxe>,splate]]);
 addShapedr(furnace,[[splate,HHammer,splate],[sbplate,bbox,sbplate],[splate,<ore:chest>,splate]]);
 addShapedr(<IC2:blockMachine:1>,[[<ore:plateAnyIron>,HHammer,<ore:plateAnyIron>],[<ore:plateCurvedAnyIron>,furnace,<ore:plateCurvedAnyIron>],[<ore:plateAnyIron>,<ore:chest>,<ore:plateAnyIron>]]);
-addShapedr(bbox,[[<minecraft:brick>,splate,<minecraft:brick>],[<minecraft:brick_block>,<ore:craftingFirestarter>,<minecraft:brick_block>],[HHammer,<gregtech:gt.multitileentity:1755>,<ore:craftingToolSawAxe>]]);
+addShapedr(bbox,[[<ore:plateCurvedCeramic>,splate,<ore:plateCurvedCeramic>],[<minecraft:brick_block>,<ore:craftingFirestarter>,<minecraft:brick_block>],[HHammer,<gregtech:gt.multitileentity:1755>,<ore:craftingToolSawAxe>]]);
+
+// Gregify Clay
+val curvedClays as minetweaker.item.IItemStack[] = [<gregtech:gt.meta.plateCurved:8215>,<gregtech:gt.meta.plateCurved:8276>,<gregtech:gt.meta.plateCurved:8455>,<gregtech:gt.meta.plateCurved:9153>,<gregtech:gt.meta.plateCurved:9154>,<gregtech:gt.meta.plateCurved:9167>];
+val plateClays as minetweaker.item.IIngredient[] = [<gregtech:gt.meta.plate:8215>,<gregtech:gt.meta.plate:8276>,<gregtech:gt.meta.plate:8455>,<gregtech:gt.meta.plate:9153>,<gregtech:gt.meta.plate:9154>,<gregtech:gt.meta.plate:9167>];
+val clays as minetweaker.item.IIngredient[] = [<minecraft:clay_ball>,<gregtech:gt.multiitem.food:12310>,<gregtech:gt.multiitem.food:12311>,<gregtech:gt.multiitem.food:12312>,<gregtech:gt.multiitem.food:12313>,<gregtech:gt.multiitem.food:12314>];
+for i,item in curvedClays {addShaped(item,[[<ore:craftingToolRollingPin>],[plateClays[i]]]);}
+
 // use campfirebackported mod to get pre furnace bricks
 mods.campfirebackport.addCampfireRecipe("regular", [<ore:itemClay>], <minecraft:brick>);
 mods.campfirebackport.addCampfireRecipe("regular", [<ore:itemMud>], <BiomesOPlenty:misc>);
 mods.campfirebackport.addCampfireRecipe("regular", [basin], <gregtech:gt.multitileentity:1755>);
+mods.campfirebackport.addCampfireRecipe("regular", [<ore:plateAnyClay>], <gregtech:gt.meta.plate:8225>);
+mods.campfirebackport.addCampfireRecipe("regular", [<ore:plateCurvedAnyClay>], <gregtech:gt.meta.plateCurved:8225>);
+
 val scp=<ore:scrapGtAnyStone>;
 val brk=<minecraft:brick>;
 val stn=<ore:cobblestone>;
@@ -99,6 +112,7 @@ addShapeless(<ore:scrapGtStone>.firstItem,[scp]);<ore:scrapGtStone>.firstItem.ad
 // {MTUtilsGT.addCustomRecipe("gt.recipe.shredder", true, 8, 128, 0, [10000], [item], [], [], [<ore:scrapGtStone>.firstItem*9]);
 // MTUtilsGT.addCustomRecipe("gt.recipe.mortar", true, 8, 128, 0, [10000], [item], [], [], [<ore:scrapGtStone>.firstItem]);}
 addShapedr(<minecraft:brick_block>,[[scp,brk,scp],[brk,scp,brk],[scp,brk,scp]]);
+addShapedr(<minecraft:brick_block>,[[n,brk,n],[brk,<ore:dustConcrete>,brk],[n,brk,n]]);
 addShaped(<minecraft:stone>*5,[[stn,scp,stn],[scp,stn,scp],[stn,scp,stn]]);
 MTUtilsGT.addCustomRecipe("gt.recipe.anvil", true, 8, 128, 0, [10000], [<minecraft:stone>], [], [], [splatei*4]);
 MTUtilsGT.addCustomRecipe("gt.recipe.anvil.bend.big", true, 8, 128, 0, [10000], [splatei], [], [], [sbplatei]);
@@ -144,4 +158,8 @@ for scw in screwMetals {
 addShaped(<CarpentersBlocks:blockCarpentersBlock>*10,[[<ore:stickAnyTreatedWood>,Screwdriver,<ore:stickAnyTreatedWood>],[<ore:plateAnyTreatedWood>,scw,<ore:plateAnyTreatedWood>],[<ore:stickAnyTreatedWood>,<ore:stickAnyTreatedWood>,<ore:stickAnyTreatedWood>]]);}
 
 //Ladders
-
+remover(<minecraft:ladder>);
+for scw in screwMetals {
+addShaped(<minecraft:ladder>*3,[[stickWood,Screwdriver,stickWood],[stickWood,stickWood,stickWood],[stickWood,scw,stickWood]]);
+addShaped(<minecraft:ladder>*6,[[stickLongWood,Screwdriver,stickLongWood],[stickLongWood,stickLongWood,stickLongWood],[stickLongWood,scw,stickLongWood]]);}
+addShapedr(<OpenBlocks:ropeladder>*6,[[n,stickWood],[<ore:rope>,Knife,<ore:rope>],[n,stickWood]]);
