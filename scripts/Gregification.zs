@@ -1,10 +1,11 @@
+
 import mods.nei.NEI;
 import mods.MTUtilsGT;
 import minetweaker.item.IItemStack;
 import minetweaker.item.IIngredient;
 /***************************************************************************************************/
 /* Bio Shared Library, put it on top of every script make the script independent, use the v.x to track progress
-v.2-stack-normalization*/
+v.LATEST-If it's in _LIB_SHARED.zs , it's the latest*/
 val Screwdriver = <ore:craftingToolScrewdriver>;
 val HHammer = <ore:craftingToolHardHammer>;
 val SHammer = <ore:craftingToolSoftHammer>;
@@ -19,22 +20,27 @@ val n = null;
 function remove(item as minetweaker.item.IItemStack) {
   mods.nei.NEI.hide(item);
   remover(item);
-  item.addTooltip("REMOVED");
+  item.addTooltip(format.red("REMOVED"));
   print("Removed & hid Item: " + item.name);
+  val ores = item.ores; if(ores.length > 0) for it in ores {it.remove(item);} // removes ore dicts from this item 
+}
+
+function removeA(item as minetweaker.item.IItemStack[]) {
+  for it in item{remove(it);}
 }
 
 function remover(item as minetweaker.item.IItemStack) {
-  recipes.remove(item);
+  recipes.remove(item.anyAmount());
   print("Removed crafting table Recipe for" + item.name);
 }
 
 function addShapedr(output as minetweaker.item.IItemStack,recipe as minetweaker.item.IIngredient[][]){
-  recipes.remove(output.definition.makeStack(1));
+  remover(output);
   recipes.addShaped(output,recipe);
 }
 
 function addShapelessr(output as minetweaker.item.IItemStack,recipe as minetweaker.item.IIngredient[]){
-  recipes.remove(output.definition.makeStack(1));
+  remover(output);
   recipes.addShapeless(output,recipe);
 }
 
@@ -68,6 +74,19 @@ addShapedr(<BuildCraft|Factory:autoWorkbenchBlock>,[[<BuildCraft|Factory:autoWor
 // Gregify paper (the method is in greg just remove vanilla)
 remover(<minecraft:paper>);
 
+// Remove BC & Forestry Gears
+removeA([<BuildCraft|Core:woodenGearItem>
+,<BuildCraft|Core:stoneGearItem>
+,<BuildCraft|Core:ironGearItem>
+,<BuildCraft|Core:goldGearItem>
+,<BuildCraft|Core:diamondGearItem>
+,<Forestry:gearTin>
+,<Forestry:gearBronze>
+,<Forestry:gearCopper>]);
+
+// Wooden Bucket Ore Dict Unifier
+<ore:bucketWooden>.addItems([<gregtech:gt.multiitem.randomtools:2300>,<gregtech:gt.multiitem.randomtools:2000>,<gregtech:gt.multiitem.randomtools:2100>,<gregtech:gt.multiitem.randomtools:2300>,<gregtech:gt.multiitem.randomtools:2500>,<gregtech:gt.multiitem.randomtools:2700>,<gregtech:gt.multiitem.randomtools:2800>]);
+
 // Galena Arrow Head
 val gal=<ore:gemGalena>;
 addShaped(<gregtech:gt.meta.toolHeadArrow:820>,[[File,gal],[gal,<ore:itemFlint>]]);
@@ -83,11 +102,9 @@ val splatei=<gregtech:gt.meta.plate:8500>;
 val splate=<ore:plateStone>;
 val sbplate=<ore:plateCurvedStone>;
 val basin=<gregtech:gt.multiitem.randomtools:990>;
-//addShaped(splate*4,[[<ore:cobblestone>,<ore:cobblestone>,<ore:cobblestone>],[<ore:itemFlint>,HHammer,<ore:itemFlint>],[<ore:cobblestone>,<ore:cobblestone>,<ore:cobblestone>]]);
-//addShaped(sbplate*2,[[splate,HHammer],[<ore:craftingToolSawAxe>,splate]]);
-addShapedr(furnace,[[splate,HHammer,splate],[sbplate,bbox,sbplate],[splate,<ore:chest>,splate]]);
+addShapedr(furnace,[[splate,HHammer,splate],[sbplate,<ore:plateCeramic>,sbplate],[splate,<ore:craftingFirestarter>,splate]]);
 addShapedr(<IC2:blockMachine:1>,[[<ore:plateAnyIron>,HHammer,<ore:plateAnyIron>],[<ore:plateCurvedAnyIron>,furnace,<ore:plateCurvedAnyIron>],[<ore:plateAnyIron>,<ore:chest>,<ore:plateAnyIron>]]);
-addShapedr(bbox,[[<ore:plateCurvedCeramic>,splate,<ore:plateCurvedCeramic>],[<minecraft:brick_block>,<ore:craftingFirestarter>,<minecraft:brick_block>],[HHammer,<gregtech:gt.multitileentity:1755>,<ore:craftingToolSawAxe>]]);
+addShapedr(bbox,[[<ore:plateCurvedCeramic>,<ore:plateCeramic>,<ore:plateCurvedCeramic>],[<ore:ingotClayBrick>,HHammer,<ore:ingotClayBrick>],[<ore:ingotClayBrick>,<minecraft:brick_block>,<ore:ingotClayBrick>]]);
 
 // Gregify Clay
 val curvedClays as minetweaker.item.IItemStack[] = [<gregtech:gt.meta.plateCurved:8215>,<gregtech:gt.meta.plateCurved:8276>,<gregtech:gt.meta.plateCurved:8455>,<gregtech:gt.meta.plateCurved:9153>,<gregtech:gt.meta.plateCurved:9154>,<gregtech:gt.meta.plateCurved:9167>];
@@ -101,6 +118,11 @@ mods.campfirebackport.addCampfireRecipe("regular", [<ore:itemMud>], <BiomesOPlen
 mods.campfirebackport.addCampfireRecipe("regular", [basin], <gregtech:gt.multitileentity:1755>);
 mods.campfirebackport.addCampfireRecipe("regular", [<ore:plateAnyClay>], <gregtech:gt.meta.plate:8225>);
 mods.campfirebackport.addCampfireRecipe("regular", [<ore:plateCurvedAnyClay>], <gregtech:gt.meta.plateCurved:8225>);
+mods.campfirebackport.addCampfireRecipe("regular", [<ore:dustStone>], <ore:plateStone>.firstItem);
+mods.campfirebackport.addCampfireRecipe("regular", [<ore:dustStone>,<ore:plateCurvedCeramic>], <ore:plateCurvedStone>.firstItem);
+// for i,item in <ore:dustStone>.items{
+// mods.campfirebackport.addCampfireRecipe("regular", [item], <ore:plateStone>.items[i]);}
+//print([<ore:wool>,<ore:dyeRed>].length);
 
 val scp=<ore:scrapGtAnyStone>;
 val brk=<minecraft:brick>;
@@ -111,8 +133,7 @@ addShapeless(<ore:scrapGtStone>.firstItem,[scp]);<ore:scrapGtStone>.firstItem.ad
 // for item in <ore:dustAnyStone>.items // Scrap factory
 // {MTUtilsGT.addCustomRecipe("gt.recipe.shredder", true, 8, 128, 0, [10000], [item], [], [], [<ore:scrapGtStone>.firstItem*9]);
 // MTUtilsGT.addCustomRecipe("gt.recipe.mortar", true, 8, 128, 0, [10000], [item], [], [], [<ore:scrapGtStone>.firstItem]);}
-addShapedr(<minecraft:brick_block>,[[scp,brk,scp],[brk,scp,brk],[scp,brk,scp]]);
-addShapedr(<minecraft:brick_block>,[[n,brk,n],[brk,<ore:dustConcrete>,brk],[n,brk,n]]);
+addShapedr(<minecraft:brick_block>,[[scp,brk,scp],[brk,HHammer,brk],[scp,brk,scp]]);
 addShaped(<minecraft:stone>*5,[[stn,scp,stn],[scp,stn,scp],[stn,scp,stn]]);
 MTUtilsGT.addCustomRecipe("gt.recipe.anvil", true, 8, 128, 0, [10000], [<minecraft:stone>], [], [], [splatei*4]);
 MTUtilsGT.addCustomRecipe("gt.recipe.anvil.bend.big", true, 8, 128, 0, [10000], [splatei], [], [], [sbplatei]);
@@ -162,4 +183,4 @@ remover(<minecraft:ladder>);
 for scw in screwMetals {
 addShaped(<minecraft:ladder>*3,[[stickWood,Screwdriver,stickWood],[stickWood,stickWood,stickWood],[stickWood,scw,stickWood]]);
 addShaped(<minecraft:ladder>*6,[[stickLongWood,Screwdriver,stickLongWood],[stickLongWood,stickLongWood,stickLongWood],[stickLongWood,scw,stickLongWood]]);}
-addShapedr(<OpenBlocks:ropeladder>*6,[[n,stickWood],[<ore:rope>,Knife,<ore:rope>],[n,stickWood]]);
+addShapedr(<OpenBlocks:ropeladder>*18,[[<ore:rope>,stickWood,<ore:rope>],[<ore:rope>,<ore:craftingToolScissors>,<ore:rope>],[<ore:rope>,stickWood,<ore:rope>]]);
